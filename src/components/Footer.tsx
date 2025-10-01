@@ -23,6 +23,21 @@ export const Footer: React.FC = () => {
           <span className={styles.techItem}>Deployed on Netlify</span>
         </div>
         
+        <div className={styles.dedication}>
+          <div className={styles.dedicationText}>
+            This tool is humbly dedicated to{' '}
+            <a
+              href="https://www.linkedin.com/in/anand-srinivasan-59313636/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.dedicationLink}
+            >
+              Anand Srinivasan
+            </a>
+            , whose financial wisdom inspired its creation.
+          </div>
+        </div>
+        
         <div className={styles.links}>
           <a
             href="https://www.linkedin.com/in/karthick-sivagnanam-61798188/"
