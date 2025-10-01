@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
             Built with <span className={styles.heart}>❤️</span> & AI by{' '}
             <span className={styles.name}>Karthick Sivagnanam</span>
           </div>
-          <div className={styles.tagline}>Curious-Learn-Build</div>
+          <div className={styles.tagline}>Curious-Learn-Build-Test-Improve</div>
         </div>
         
         <div className={styles.tech}>
