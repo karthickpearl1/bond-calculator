@@ -1,0 +1,337 @@
+/* Responsive Design Utilities */
+
+/* Container queries for modern browsers */
+@supports (container-type: inline-size) {
+  .responsive-container {
+    container-type: inline-size;
+  }
+  
+  /* Container-based responsive design */
+  @container (max-width: 480px) {
+    .container-responsive {
+      padding: var(--spacing-sm);
+    }
+  }
+  
+  @container (min-width: 481px) and (max-width: 768px) {
+    .container-responsive {
+      padding: var(--spacing-md);
+    }
+  }
+  
+  @container (min-width: 769px) {
+    .container-responsive {
+      padding: var(--spacing-lg);
+    }
+  }
+}
+
+/* Responsive Typography */
+.responsive-text {
+  font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
+}
+
+.responsive-heading {
+  font-size: clamp(var(--text-lg), 4vw, var(--text-2xl));
+}
+
+.responsive-title {
+  font-size: clamp(var(--text-2xl), 6vw, var(--text-4xl));
+}
+
+/* Responsive Spacing */
+.responsive-padding {
+  padding: clamp(var(--spacing-sm), 3vw, var(--spacing-xl));
+}
+
+.responsive-margin {
+  margin: clamp(var(--spacing-sm), 2vw, var(--spacing-lg));
+}
+
+/* Responsive Grid */
+.responsive-grid {
+  display: grid;
+  gap: clamp(var(--spacing-sm), 2vw, var(--spacing-lg));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+}
+
+.responsive-grid-2 {
+  display: grid;
+  gap: clamp(var(--spacing-sm), 2vw, var(--spacing-lg));
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+}
+
+.responsive-grid-3 {
+  display: grid;
+  gap: clamp(var(--spacing-sm), 2vw, var(--spacing-lg));
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+}
+
+/* Responsive Flexbox */
+.responsive-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(var(--spacing-sm), 2vw, var(--spacing-lg));
+}
+
+.responsive-flex > * {
+  flex: 1 1 min(300px, 100%);
+}
+
+/* Touch-friendly interactive elements */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  .interactive {
+    min-height: 44px;
+    min-width: 44px;
+    padding: var(--spacing-md);
+  }
+  
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    padding: var(--spacing-md);
+  }
+  
+  .checkbox,
+  .radio {
+    min-width: 24px;
+    min-height: 24px;
+  }
+}
+
+/* Responsive Images */
+.responsive-image {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Responsive Tables */
+.responsive-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table {
+  min-width: 600px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .responsive-table {
+    font-size: var(--text-xs);
+  }
+  
+  .responsive-table th,
+  .responsive-table td {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Responsive Navigation */
+.responsive-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+  .responsive-nav {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+}
+
+/* Responsive Cards */
+.responsive-card {
+  padding: clamp(var(--spacing-md), 3vw, var(--spacing-xl));
+  border-radius: clamp(var(--radius-md), 1vw, var(--radius-xl));
+}
+
+/* Responsive Form Elements */
+.responsive-form-grid {
+  display: grid;
+  gap: clamp(var(--spacing-md), 2vw, var(--spacing-lg));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+}
+
+@media (max-width: 480px) {
+  .responsive-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive Buttons */
+.responsive-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+@media (max-width: 480px) {
+  .responsive-button-group {
+    flex-direction: column;
+  }
+  
+  .responsive-button-group button {
+    width: 100%;
+  }
+}
+
+/* Responsive Modals/Dialogs */
+.responsive-modal {
+  width: min(90vw, 600px);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .responsive-modal {
+    width: 95vw;
+    max-height: 95vh;
+  }
+}
+
+/* Responsive Sidebar */
+.responsive-sidebar {
+  width: min(300px, 80vw);
+}
+
+@media (max-width: 768px) {
+  .responsive-sidebar {
+    width: 100vw;
+  }
+}
+
+/* Responsive Utilities */
+.hide-mobile {
+  display: block;
+}
+
+.show-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none;
+  }
+  
+  .show-mobile {
+    display: block;
+  }
+}
+
+.hide-desktop {
+  display: none;
+}
+
+.show-desktop {
+  display: block;
+}
+
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none;
+  }
+  
+  .show-desktop {
+    display: block;
+  }
+}
+
+/* Responsive Text Alignment */
+.text-center-mobile {
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .text-center-mobile {
+    text-align: center;
+  }
+}
+
+/* Responsive Overflow */
+.responsive-overflow {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive Aspect Ratios */
+.aspect-ratio-16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-ratio-4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+.aspect-ratio-1-1 {
+  aspect-ratio: 1 / 1;
+}
+
+/* Fallback for browsers without aspect-ratio support */
+@supports not (aspect-ratio: 1 / 1) {
+  .aspect-ratio-16-9 {
+    position: relative;
+    padding-bottom: 56.25%; /* 9/16 * 100% */
+  }
+  
+  .aspect-ratio-4-3 {
+    position: relative;
+    padding-bottom: 75%; /* 3/4 * 100% */
+  }
+  
+  .aspect-ratio-1-1 {
+    position: relative;
+    padding-bottom: 100%;
+  }
+  
+  .aspect-ratio-16-9 > *,
+  .aspect-ratio-4-3 > *,
+  .aspect-ratio-1-1 > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Responsive Focus Indicators */
+@media (prefers-reduced-motion: no-preference) {
+  .responsive-focus:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    transition: outline-offset var(--transition-fast);
+  }
+}
+
+/* Responsive Animations */
+@media (prefers-reduced-motion: reduce) {
+  .responsive-animation {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Responsive Print Styles */
+@media print {
+  .responsive-no-print {
+    display: none !important;
+  }
+  
+  .responsive-print-only {
+    display: block !important;
+  }
+  
+  .responsive-print-break {
+    page-break-before: always;
+  }
+  
+  .responsive-print-avoid-break {
+    page-break-inside: avoid;
+  }
+}
