@@ -4,11 +4,18 @@ A comprehensive React-based web application for analyzing bond investment return
 
 ## Features
 
-- **Bond Investment Analysis**: Calculate returns for various exit years and sale prices
+- **Bond Investment Analysis**: Calculate returns for various exit years and sale prices including brokerage costs
 - **XIRR Calculations**: Accurate annualized return calculations using Newton-Raphson method
-- **Interactive Matrix View**: Visual comparison of returns across all scenarios
+- **Interactive Matrix View**: Visual comparison of returns across all scenarios with purchase price highlighting
 - **Real-time Updates**: Automatic recalculation when inputs change
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Responsive Design**: Optimized layouts for all screen sizes
+  - **Single-view Layout**: High-resolution screens show everything without scrolling
+  - **Two-column Layout**: Inputs on left, results on right for desktop
+  - **Stacked Layout**: Mobile-friendly vertical layout for smaller screens
+- **Dark/Light Mode**: Toggle between themes with system preference detection
+- **Brokerage Integration**: Include transaction costs in all return calculations
+- **Visual Indicators**: Purchase price column highlighted in return matrix
+- **Dynamic Scenarios**: Exit years based on maturity date, customizable sale prices
 - **Static Deployment**: No backend required, deployable anywhere
 
 ## Getting Started

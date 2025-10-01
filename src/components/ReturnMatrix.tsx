@@ -6,6 +6,7 @@ interface ReturnMatrixProps {
   xirrMatrix: XIRRMatrix;
   salePrices: number[];
   exitYears: number[];
+  purchasePrice: number;
   isCalculating?: boolean;
   calculationErrors?: string[];
 }
@@ -19,6 +20,7 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
   xirrMatrix,
   salePrices,
   exitYears,
+  purchasePrice,
   isCalculating = false,
   calculationErrors = []
 }) => {
@@ -70,20 +72,39 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
   };
 
   /**
+   * Check if a sale price matches the purchase price
+   * @param salePrice - Sale price to check
+   * @returns True if this is the purchase price
+   */
+  const isPurchasePrice = (salePrice: number): boolean => {
+    return Math.abs(salePrice - purchasePrice) < 0.01; // Allow for small floating point differences
+  };
+
+  /**
    * Determine cell styling based on XIRR value
    * @param xirr - XIRR value
+   * @param salePrice - Sale price for additional styling
    * @returns CSS class name for styling
    */
-  const getCellClass = (xirr: number | null): string => {
+  const getCellClass = (xirr: number | null, salePrice?: number): string => {
+    let baseClass = '';
+    
     if (xirr === null || isNaN(xirr) || !isFinite(xirr)) {
-      return styles.cellError;
+      baseClass = styles.cellError;
+    } else {
+      // Color coding based on return levels
+      if (xirr >= 0.15) baseClass = styles.cellExcellent; // 15%+
+      else if (xirr >= 0.12) baseClass = styles.cellGood;      // 12-15%
+      else if (xirr >= 0.08) baseClass = styles.cellFair;      // 8-12%
+      else baseClass = styles.cellPoor;                        // <8%
     }
     
-    // Color coding based on return levels
-    if (xirr >= 0.15) return styles.cellExcellent; // 15%+
-    if (xirr >= 0.12) return styles.cellGood;      // 12-15%
-    if (xirr >= 0.08) return styles.cellFair;      // 8-12%
-    return styles.cellPoor;                        // <8%
+    // Add purchase price marker
+    if (salePrice && isPurchasePrice(salePrice)) {
+      baseClass += ` ${styles.purchasePriceColumn}`;
+    }
+    
+    return baseClass;
   };
 
   if (calculationErrors.length > 0) {
@@ -122,10 +143,15 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
               return (
                 <div 
                   key={`${exitYear}-${salePrice}`}
-                  className={`${styles.cardItem} ${getCellClass(xirrValue)}`}
+                  className={`${styles.cardItem} ${getCellClass(xirrValue, salePrice)}`}
                 >
                   <div className={styles.cardLabel}>
                     Sale Price: {salePrice}%
+                    {isPurchasePrice(salePrice) && (
+                      <span className={styles.purchaseMarker} title="Purchase Price">
+                        💰
+                      </span>
+                    )}
                   </div>
                   <div className={styles.cardValue}>
                     {isCalculating ? (
@@ -155,8 +181,18 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
           <tr>
             <th className={styles.headerCell}>Exit Year</th>
             {salePrices.map(price => (
-              <th key={price} className={styles.headerCell}>
-                {price}%
+              <th 
+                key={price} 
+                className={`${styles.headerCell} ${isPurchasePrice(price) ? styles.purchasePriceHeader : ''}`}
+              >
+                <div className={styles.headerContent}>
+                  <span className={styles.priceValue}>{price}%</span>
+                  {isPurchasePrice(price) && (
+                    <span className={styles.purchaseMarker} title="Purchase Price">
+                      💰
+                    </span>
+                  )}
+                </div>
               </th>
             ))}
           </tr>
@@ -175,8 +211,8 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
                 return (
                   <td 
                     key={`${exitYear}-${salePrice}`}
-                    className={`${styles.dataCell} ${getCellClass(xirrValue)}`}
-                    title={`Exit Year ${exitYear}, Sale Price ${salePrice}%: ${xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}`}
+                    className={`${styles.dataCell} ${getCellClass(xirrValue, salePrice)}`}
+                    title={`Exit Year ${exitYear}, Sale Price ${salePrice}%${isPurchasePrice(salePrice) ? ' (Purchase Price)' : ''}: ${xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}`}
                   >
                     {isCalculating ? (
                       <span className={styles.loading}>...</span>

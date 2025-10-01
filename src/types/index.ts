@@ -84,5 +84,6 @@ export const DEFAULT_SALE_PRICES = [100, 101, 102, 102.5];
 
 /**
  * Default exit year options (1-5 years after purchase)
+ * Note: Exit years are now dynamically generated based on maturity date
  */
 export const DEFAULT_EXIT_YEARS = [1, 2, 3, 4, 5];

@@ -109,7 +109,7 @@ export class XIRRCalculator {
    * Generate cash flows for a bond investment scenario
    * 
    * @param inputs - Bond input parameters
-   * @param exitYear - Number of years after purchase to exit (1-5)
+   * @param exitYear - Number of years after purchase to exit (dynamic based on maturity)
    * @param salePrice - Sale price as percentage of face value
    * @returns Array of cash flows including initial investment, monthly coupons, and sale proceeds
    */
@@ -118,8 +118,17 @@ export class XIRRCalculator {
     exitYear: number,
     salePrice: number
   ): CashFlow[] {
-    if (exitYear < 1 || exitYear > 5) {
-      throw new Error('Exit year must be between 1 and 5');
+    if (exitYear < 1) {
+      throw new Error('Exit year must be at least 1');
+    }
+    
+    // Calculate maximum possible exit year based on maturity date
+    const purchaseYear = inputs.purchaseDate.getFullYear();
+    const maturityYear = inputs.maturityDate.getFullYear();
+    const maxExitYear = maturityYear - purchaseYear;
+    
+    if (exitYear > maxExitYear) {
+      throw new Error(`Exit year cannot exceed ${maxExitYear} (maturity year ${maturityYear})`);
     }
     
     if (salePrice <= 0) {

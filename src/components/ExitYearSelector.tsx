@@ -1,5 +1,4 @@
-import React from 'react';
-import { DEFAULT_EXIT_YEARS } from '../types';
+import React, { useMemo } from 'react';
 import styles from './ExitYearSelector.module.css';
 
 /**
@@ -9,17 +8,36 @@ interface ExitYearSelectorProps {
   selectedYears: number[];
   onSelectionChange: (selectedYears: number[]) => void;
   purchaseDate: Date;
+  maturityDate: Date;
 }
 
 /**
  * ExitYearSelector component for selecting exit year scenarios
- * Provides selectable options for exit years 1-5 after purchase with clear year labels
+ * Dynamically generates exit years based on purchase and maturity dates
  */
 export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
   selectedYears,
   onSelectionChange,
-  purchaseDate
+  purchaseDate,
+  maturityDate
 }) => {
+  /**
+   * Calculate available exit years based on purchase and maturity dates
+   */
+  const availableExitYears = useMemo(() => {
+    const purchaseYear = purchaseDate.getFullYear();
+    const maturityYear = maturityDate.getFullYear();
+    const maxYears = maturityYear - purchaseYear;
+    
+    // Generate years from 1 to maxYears, but at least 1 year
+    const years: number[] = [];
+    for (let i = 1; i <= Math.max(1, maxYears); i++) {
+      years.push(i);
+    }
+    
+    return years;
+  }, [purchaseDate, maturityDate]);
+
   /**
    * Calculate the actual calendar year for an exit year
    */
@@ -48,19 +66,19 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
    * Handle select all / deselect all
    */
   const handleSelectAll = () => {
-    if (selectedYears.length === DEFAULT_EXIT_YEARS.length) {
+    if (selectedYears.length === availableExitYears.length) {
       // Deselect all
       onSelectionChange([]);
     } else {
-      // Select all
-      onSelectionChange([...DEFAULT_EXIT_YEARS]);
+      // Select all available years
+      onSelectionChange([...availableExitYears]);
     }
   };
 
   /**
    * Check if all years are selected
    */
-  const allSelected = selectedYears.length === DEFAULT_EXIT_YEARS.length;
+  const allSelected = selectedYears.length === availableExitYears.length;
   const someSelected = selectedYears.length > 0;
 
   return (
@@ -81,7 +99,7 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
       </p>
 
       <div className={styles.yearGrid}>
-        {DEFAULT_EXIT_YEARS.map((exitYear) => {
+        {availableExitYears.map((exitYear) => {
           const isSelected = selectedYears.includes(exitYear);
           const calendarYear = getExitCalendarYear(exitYear);
           
@@ -127,7 +145,7 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
       {someSelected && (
         <div className={styles.selectionSummary}>
           <span className={styles.selectedCount}>
-            {selectedYears.length} of {DEFAULT_EXIT_YEARS.length} exit years selected
+            {selectedYears.length} of {availableExitYears.length} exit years selected
           </span>
           <div className={styles.selectedYears}>
             Selected: {selectedYears.map(year => getExitCalendarYear(year)).join(', ')}

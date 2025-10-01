@@ -18,6 +18,8 @@ import { SalePriceSelector } from './SalePriceSelector';
 import { ExitYearSelector } from './ExitYearSelector';
 import { CalculationSummary } from './CalculationSummary';
 import { ReturnMatrix } from './ReturnMatrix';
+import { ThemeToggle } from './ThemeToggle';
+import { Footer } from './Footer';
 import styles from './BondCalculator.module.css';
 
 /**
@@ -29,6 +31,7 @@ export const BondCalculator: React.FC = () => {
   // Application state
   const [inputs, setInputs] = useState<BondInputs>(DEFAULT_BOND_INPUTS);
   const [selectedSalePrices, setSelectedSalePrices] = useState<number[]>(DEFAULT_SALE_PRICES);
+  const [availableSalePrices, setAvailableSalePrices] = useState<number[]>(DEFAULT_SALE_PRICES);
   const [selectedExitYears, setSelectedExitYears] = useState<number[]>(DEFAULT_EXIT_YEARS);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
   const [errors, setErrors] = useState<ErrorState>({
@@ -54,6 +57,60 @@ export const BondCalculator: React.FC = () => {
       }
     };
   }, []);
+
+  /**
+   * Generate default sale prices from face value (100%) to purchase price
+   */
+  const generateDefaultSalePrices = useCallback((purchasePrice: number): number[] => {
+    const prices: number[] = [];
+    const faceValue = 100; // Face value is always 100%
+    
+    // Determine the range from face value to purchase price
+    const minPrice = Math.min(faceValue, purchasePrice);
+    const maxPrice = Math.max(faceValue, purchasePrice);
+    
+    // Generate prices with 0.5% increments
+    const startPrice = Math.floor(minPrice * 2) / 2; // Round down to nearest 0.5
+    const endPrice = Math.ceil(maxPrice * 2) / 2;   // Round up to nearest 0.5
+    
+    for (let price = startPrice; price <= endPrice; price += 0.5) {
+      prices.push(price);
+    }
+    
+    // Ensure face value (100%) is always included
+    if (!prices.includes(faceValue)) {
+      prices.push(faceValue);
+    }
+    
+    // Ensure exact purchase price is always included
+    if (!prices.includes(purchasePrice)) {
+      prices.push(purchasePrice);
+    }
+    
+    return prices.sort((a, b) => a - b);
+  }, []);
+
+  /**
+   * Effect to update available sale prices when purchase price changes
+   */
+  useEffect(() => {
+    const newDefaultPrices = generateDefaultSalePrices(inputs.purchasePrice);
+    
+    // Check if current prices look like auto-generated defaults
+    // (contains face value 100% and purchase price, and has reasonable increments)
+    const hasDefaults = availableSalePrices.includes(100) && 
+                       availableSalePrices.includes(inputs.purchasePrice);
+    const isLikelyDefaults = hasDefaults && availableSalePrices.length <= 10; // Reasonable default count
+    
+    if (isLikelyDefaults || availableSalePrices.length === 0) {
+      setAvailableSalePrices(newDefaultPrices);
+      // Update selected prices to include some key defaults
+      const keyPrices = [100, inputs.purchasePrice]; // Always include face value and purchase price
+      const additionalPrices = newDefaultPrices.filter(p => !keyPrices.includes(p)).slice(0, 2);
+      const defaultSelection = [...keyPrices, ...additionalPrices].filter(p => newDefaultPrices.includes(p));
+      setSelectedSalePrices(defaultSelection);
+    }
+  }, [inputs.purchasePrice, generateDefaultSalePrices, availableSalePrices]);
 
   /**
    * Effect to trigger recalculation when any parameter changes
@@ -121,6 +178,15 @@ export const BondCalculator: React.FC = () => {
    */
   const handleSalePriceChange = useCallback((prices: number[]) => {
     setSelectedSalePrices(prices);
+  }, []);
+
+  /**
+   * Handle available sale prices changes
+   */
+  const handleAvailableSalePricesChange = useCallback((prices: number[]) => {
+    setAvailableSalePrices(prices);
+    // Remove any selected prices that are no longer available
+    setSelectedSalePrices(prev => prev.filter(price => prices.includes(price)));
   }, []);
 
   /**
@@ -279,37 +345,50 @@ export const BondCalculator: React.FC = () => {
   return (
     <div className={styles.bondCalculator}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Bond Return Calculator</h1>
-        <p className={styles.subtitle}>
-          Analyze bond investment returns through XIRR calculations across different exit scenarios and sale prices
-        </p>
+        <div className={styles.headerContent}>
+          <div className={styles.titleSection}>
+            <h1 className={styles.title}>Bond Return Calculator</h1>
+            <p className={styles.subtitle}>
+              Analyze bond investment returns through XIRR calculations across different exit scenarios and sale prices
+            </p>
+          </div>
+          <div className={styles.headerActions}>
+            <ThemeToggle />
+          </div>
+        </div>
       </header>
 
       <div className={styles.content}>
-        {/* Input Section */}
-        <section className={styles.inputSection}>
-          <BondDetailsSection
-            inputs={inputs}
-            onInputChange={handleInputChange}
-            errors={errors.inputErrors}
-          />
+        {/* Left Column - Inputs */}
+        <section className={styles.leftColumn}>
+          <div className={styles.inputSection}>
+            <BondDetailsSection
+              inputs={inputs}
+              onInputChange={handleInputChange}
+              errors={errors.inputErrors}
+            />
+          </div>
 
-          <div className={styles.selectionGrid}>
+          <div className={styles.selectionSection}>
             <SalePriceSelector
               selectedPrices={selectedSalePrices}
               onSelectionChange={handleSalePriceChange}
+              purchasePrice={inputs.purchasePrice}
+              availablePrices={availableSalePrices}
+              onAvailablePricesChange={handleAvailableSalePricesChange}
             />
 
             <ExitYearSelector
               selectedYears={selectedExitYears}
               onSelectionChange={handleExitYearChange}
               purchaseDate={inputs.purchaseDate}
+              maturityDate={inputs.maturityDate}
             />
           </div>
         </section>
 
-        {/* Results Section */}
-        <section className={styles.resultsSection}>
+        {/* Right Column - Results */}
+        <section className={styles.rightColumn}>
           {/* Input Validation Errors Summary */}
           {Object.keys(errors.inputErrors).length > 0 && (
             <div className={styles.errorContainer}>
@@ -364,6 +443,7 @@ export const BondCalculator: React.FC = () => {
               xirrMatrix={calculations.xirrMatrix}
               salePrices={selectedSalePrices}
               exitYears={selectedExitYears}
+              purchasePrice={inputs.purchasePrice}
               isCalculating={isCalculating}
               calculationErrors={errors.calculationErrors}
             />
@@ -377,6 +457,8 @@ export const BondCalculator: React.FC = () => {
           )}
         </section>
       </div>
+      
+      <Footer />
     </div>
   );
 };
