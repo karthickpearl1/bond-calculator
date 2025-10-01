@@ -24,6 +24,7 @@ export const bondInputSchema: Record<keyof BondInputs, ValidationRule> = {
   couponRate: { min: 0, max: 50, required: true, type: 'number' },
   purchasePrice: { min: 50, max: 200, required: true, type: 'number' },
   accruedInterest: { min: 0, max: 100000, required: true, type: 'number' },
+  brokerage: { min: 0, max: 50000, required: true, type: 'number' },
   purchaseDate: { required: true, type: 'date' },
   maturityDate: { required: true, type: 'date', after: 'purchaseDate' },
   tdsRate: { min: 0, max: 50, required: true, type: 'number' }
@@ -42,7 +43,7 @@ export interface ValidationResult {
  */
 export function validateField(
   fieldName: keyof BondInputs,
-  value: any,
+  value: unknown,
   allInputs?: Partial<BondInputs>
 ): ValidationResult {
   const rule = bondInputSchema[fieldName];
@@ -75,13 +76,13 @@ export function validateField(
  */
 function validateNumber(
   fieldName: keyof BondInputs,
-  value: any,
+  value: unknown,
   rule: ValidationRule
 ): ValidationResult {
-  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  const numValue = typeof value === 'string' ? parseFloat(value) : (value as number);
   
   // Check if it's a valid number
-  if (isNaN(numValue) || !isFinite(numValue)) {
+  if (typeof numValue !== 'number' || isNaN(numValue) || !isFinite(numValue)) {
     return {
       isValid: false,
       error: `${getFieldDisplayName(fieldName)} must be a valid number`
@@ -112,7 +113,7 @@ function validateNumber(
  */
 function validateDate(
   fieldName: keyof BondInputs,
-  value: any,
+  value: unknown,
   rule: ValidationRule,
   allInputs?: Partial<BondInputs>
 ): ValidationResult {
@@ -201,6 +202,7 @@ function getFieldDisplayName(fieldName: keyof BondInputs): string {
     couponRate: 'Coupon Rate',
     purchasePrice: 'Purchase Price',
     accruedInterest: 'Accrued Interest',
+    brokerage: 'Brokerage',
     purchaseDate: 'Purchase Date',
     maturityDate: 'Maturity Date',
     tdsRate: 'TDS Rate'
@@ -227,7 +229,7 @@ function formatNumber(value: number): string {
 export function useRealTimeValidation() {
   const validateOnChange = (
     fieldName: keyof BondInputs,
-    value: any,
+    value: unknown,
     allInputs: Partial<BondInputs>
   ): ValidationResult => {
     return validateField(fieldName, value, allInputs);
@@ -235,7 +237,7 @@ export function useRealTimeValidation() {
 
   const validateOnBlur = (
     fieldName: keyof BondInputs,
-    value: any,
+    value: unknown,
     allInputs: Partial<BondInputs>
   ): ValidationResult => {
     // More thorough validation on blur

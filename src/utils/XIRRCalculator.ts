@@ -1,4 +1,5 @@
 import type { CashFlow, BondInputs } from '../types';
+import { BondCalculator } from './BondCalculator';
 
 /**
  * XIRRCalculator class provides XIRR (Extended Internal Rate of Return) calculations
@@ -127,8 +128,13 @@ export class XIRRCalculator {
 
     const cashFlows: CashFlow[] = [];
     
-    // Calculate initial investment (negative cash flow)
-    const totalCost = (inputs.faceValue * (inputs.purchasePrice / 100)) + inputs.accruedInterest;
+    // Calculate initial investment (negative cash flow) including brokerage
+    const totalCost = BondCalculator.calculateTotalCost(
+      inputs.faceValue,
+      inputs.purchasePrice,
+      inputs.accruedInterest,
+      inputs.brokerage
+    );
     cashFlows.push({
       date: new Date(inputs.purchaseDate),
       amount: -totalCost

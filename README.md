@@ -1,15 +1,60 @@
-# React + TypeScript + Vite
+# Bond Return Calculator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive React-based web application for analyzing bond investment returns through XIRR calculations across different exit scenarios and sale prices.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Bond Investment Analysis**: Calculate returns for various exit years and sale prices
+- **XIRR Calculations**: Accurate annualized return calculations using Newton-Raphson method
+- **Interactive Matrix View**: Visual comparison of returns across all scenarios
+- **Real-time Updates**: Automatic recalculation when inputs change
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Static Deployment**: No backend required, deployable anywhere
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+
+- Node.js 18 or higher
+- npm or yarn
+
+### Installation
+
+```bash
+npm install
+```
+
+### Development
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist/` directory.
+
+## Deployment
+
+This application can be deployed to any static hosting platform. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions for:
+
+- Vercel (recommended)
+- Netlify
+- GitHub Pages
+- Other static hosts
+
+## Technology Stack
+
+- **React 18** with TypeScript
+- **Vite** for fast development and optimized builds
+- **CSS Modules** for component styling
+- **Custom XIRR Implementation** using Newton-Raphson method
 
 ## Expanding the ESLint configuration
 

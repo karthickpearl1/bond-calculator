@@ -85,6 +85,8 @@
   background: var(--color-bg-primary);
   position: relative;
   overflow: hidden;
+  min-height: 60px; /* Touch-friendly minimum height */
+  -webkit-tap-highlight-color: transparent; /* Remove iOS tap highlight */
 }
 
 .priceOption::before {

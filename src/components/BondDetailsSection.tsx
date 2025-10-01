@@ -7,7 +7,7 @@ import styles from './BondDetailsSection.module.css';
  */
 interface BondDetailsSectionProps {
   inputs: BondInputs;
-  onInputChange: (field: keyof BondInputs, value: any) => void;
+  onInputChange: (field: keyof BondInputs, value: string | number | Date) => void;
   errors?: Record<string, string>;
 }
 
@@ -24,11 +24,11 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
    * Handle input change with validation
    */
   const handleInputChange = (field: keyof BondInputs, value: string | Date) => {
-    let processedValue: any = value;
+    let processedValue: string | number | Date = value;
     
     // Convert string to number for numeric fields
     if (typeof value === 'string' && 
-        ['faceValue', 'couponRate', 'purchasePrice', 'accruedInterest', 'tdsRate'].includes(field)) {
+        ['faceValue', 'couponRate', 'purchasePrice', 'accruedInterest', 'brokerage', 'tdsRate'].includes(field)) {
       processedValue = value === '' ? '' : parseFloat(value);
     }
     
@@ -136,6 +136,27 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
           />
           {errors.accruedInterest && (
             <span className={styles.errorMessage}>{errors.accruedInterest}</span>
+          )}
+        </div>
+
+        {/* Brokerage */}
+        <div className={styles.formGroup}>
+          <label htmlFor="brokerage">
+            Brokerage <span className={styles.required}>*</span>
+          </label>
+          <input
+            id="brokerage"
+            type="number"
+            value={inputs.brokerage || ''}
+            onChange={(e) => handleInputChange('brokerage', e.target.value)}
+            placeholder="0"
+            min="0"
+            max="50000"
+            step="0.01"
+            className={errors.brokerage ? styles.error : ''}
+          />
+          {errors.brokerage && (
+            <span className={styles.errorMessage}>{errors.brokerage}</span>
           )}
         </div>
 

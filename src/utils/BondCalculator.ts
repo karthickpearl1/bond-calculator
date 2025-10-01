@@ -5,17 +5,19 @@
 export class BondCalculator {
   /**
    * Calculate the total cost to client for purchasing the bond
-   * Formula: Face Value × (Purchase Price/100) + Accrued Interest
+   * Formula: Face Value × (Purchase Price/100) + Accrued Interest + Brokerage
    * 
    * @param faceValue - The face value of the bond
    * @param purchasePrice - Purchase price as percentage of face value
    * @param accruedInterest - Accrued interest amount
+   * @param brokerage - Brokerage fees and charges
    * @returns Total cost to client
    */
   static calculateTotalCost(
     faceValue: number, 
     purchasePrice: number, 
-    accruedInterest: number
+    accruedInterest: number,
+    brokerage: number = 0
   ): number {
     if (faceValue <= 0) {
       throw new Error('Face value must be greater than 0');
@@ -26,8 +28,11 @@ export class BondCalculator {
     if (accruedInterest < 0) {
       throw new Error('Accrued interest cannot be negative');
     }
+    if (brokerage < 0) {
+      throw new Error('Brokerage cannot be negative');
+    }
 
-    return (faceValue * (purchasePrice / 100)) + accruedInterest;
+    return (faceValue * (purchasePrice / 100)) + accruedInterest + brokerage;
   }
 
   /**

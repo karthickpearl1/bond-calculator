@@ -64,6 +64,9 @@
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   position: relative;
+  min-height: 44px; /* Touch-friendly minimum height */
+  -webkit-appearance: none; /* Remove iOS styling */
+  appearance: none;
 }
 
 .formGroup input:hover {

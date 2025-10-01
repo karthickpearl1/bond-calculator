@@ -75,6 +75,7 @@ export const BondCalculator: React.FC = () => {
       // Clear loading state if inputs are invalid
       setIsCalculating(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputs, selectedSalePrices, selectedExitYears]);
 
   /**
@@ -99,7 +100,7 @@ export const BondCalculator: React.FC = () => {
    * Handle input field changes with validation
    * Recalculation is handled automatically by useEffect
    */
-  const handleInputChange = useCallback((field: keyof BondInputs, value: any) => {
+  const handleInputChange = useCallback((field: keyof BondInputs, value: string | number | Date) => {
     setInputs(prevInputs => {
       const newInputs = { ...prevInputs, [field]: value };
       
@@ -138,7 +139,8 @@ export const BondCalculator: React.FC = () => {
       const totalCost = BondCalc.calculateTotalCost(
         inputs.faceValue,
         inputs.purchasePrice,
-        inputs.accruedInterest
+        inputs.accruedInterest,
+        inputs.brokerage
       );
 
       const monthlyCoupon = BondCalc.calculateMonthlyCoupon(
@@ -164,7 +166,7 @@ export const BondCalculator: React.FC = () => {
         netMonthlyCoupon: 0
       };
     }
-  }, [inputs.faceValue, inputs.purchasePrice, inputs.accruedInterest, inputs.couponRate, inputs.tdsRate]);
+  }, [inputs.faceValue, inputs.purchasePrice, inputs.accruedInterest, inputs.brokerage, inputs.couponRate, inputs.tdsRate]);
 
   /**
    * Calculate XIRR matrix for all selected scenarios with enhanced error handling

@@ -10,6 +10,7 @@ export interface BondInputs {
   couponRate: number;
   purchasePrice: number;
   accruedInterest: number;
+  brokerage: number;
   purchaseDate: Date;
   maturityDate: Date;
   tdsRate: number;
@@ -70,6 +71,7 @@ export const DEFAULT_BOND_INPUTS: BondInputs = {
   couponRate: 11.9,
   purchasePrice: 102.5,
   accruedInterest: 358.63,
+  brokerage: 0,
   purchaseDate: new Date('2025-10-03'),
   maturityDate: new Date('2030-12-31'),
   tdsRate: 10
