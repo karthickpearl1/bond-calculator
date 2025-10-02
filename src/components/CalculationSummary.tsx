@@ -25,7 +25,7 @@ export const CalculationSummary: React.FC<CalculationSummaryProps> = ({
   return (
     <div className={styles.calculationSummary}>
       <h3 className={styles.title}>Calculation Summary</h3>
-      
+
       <div className={styles.summaryGrid}>
         <div className={`${styles.summaryItem} ${isCalculating ? styles.loading : ''}`}>
           <label className={styles.label} data-type="cost">Total Cost to Client</label>

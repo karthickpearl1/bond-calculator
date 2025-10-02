@@ -62,6 +62,20 @@
   }
 }
 
+@media (max-width: 480px) {
+  .themeToggle {
+    padding: 2px var(--spacing-xs);
+    font-size: 10px;
+    gap: 2px;
+  }
+  
+  .icon {
+    font-size: var(--text-sm);
+    width: 14px;
+    height: 14px;
+  }
+}
+
 /* High contrast mode */
 @media (prefers-contrast: high) {
   .themeToggle {
