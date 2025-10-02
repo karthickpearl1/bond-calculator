@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { XIRRMatrix } from '../types';
+import type { XIRRMatrix, BondInputs } from '../types';
 import styles from './ReturnMatrix.module.css';
 
 interface ReturnMatrixProps {
@@ -7,6 +7,7 @@ interface ReturnMatrixProps {
   salePrices: number[];
   exitYears: number[];
   purchasePrice: number;
+  bondInputs: BondInputs;
   isCalculating?: boolean;
   calculationErrors?: string[];
 }
@@ -21,6 +22,7 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
   salePrices,
   exitYears,
   purchasePrice,
+  bondInputs,
   isCalculating = false,
   calculationErrors = []
 }) => {
@@ -49,6 +51,41 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
       return 'N/A';
     }
     return `${(xirr * 100).toFixed(2)}%`;
+  };
+
+  /**
+   * Calculate total amount earned for a scenario
+   * @param exitYear - Exit year
+   * @param salePrice - Sale price percentage
+   * @returns Total amount earned (sale proceeds + net coupons)
+   */
+  const calculateTotalAmount = (exitYear: number, salePrice: number): number => {
+    // Sale proceeds
+    const saleProceeds = bondInputs.faceValue * (salePrice / 100);
+    
+    // Net monthly coupon
+    const monthlyCoupon = (bondInputs.faceValue * (bondInputs.couponRate / 100)) / 12;
+    const netMonthlyCoupon = monthlyCoupon * (1 - (bondInputs.tdsRate / 100));
+    
+    // Total coupons over the period
+    const totalMonths = exitYear * 12;
+    const totalCoupons = netMonthlyCoupon * totalMonths;
+    
+    return saleProceeds + totalCoupons;
+  };
+
+  /**
+   * Format currency amount in Indian number format
+   * @param amount - Amount to format
+   * @returns Formatted currency string (e.g., ₹1,23,544)
+   */
+  const formatAmount = (amount: number): string => {
+    const roundedAmount = Math.round(amount);
+    
+    // Convert to Indian number format with commas
+    const formatted = roundedAmount.toLocaleString('en-IN');
+    
+    return `₹${formatted}`;
   };
 
   /**
@@ -140,6 +177,7 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
           <div className={styles.cardGrid}>
             {salePrices.map(salePrice => {
               const xirrValue = getXIRRValue(exitYear, salePrice);
+              const totalAmount = calculateTotalAmount(exitYear, salePrice);
               return (
                 <div 
                   key={`${exitYear}-${salePrice}`}
@@ -157,9 +195,14 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
                     {isCalculating ? (
                       <span className={styles.loading}>...</span>
                     ) : (
-                      <span className={styles.xirrValue}>
-                        {xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}
-                      </span>
+                      <div className={styles.cardContent}>
+                        <div className={styles.xirrValue}>
+                          {xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}
+                        </div>
+                        <div className={styles.totalAmount}>
+                          {formatAmount(totalAmount)}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -208,18 +251,24 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
               </td>
               {salePrices.map(salePrice => {
                 const xirrValue = getXIRRValue(exitYear, salePrice);
+                const totalAmount = calculateTotalAmount(exitYear, salePrice);
                 return (
                   <td 
                     key={`${exitYear}-${salePrice}`}
                     className={`${styles.dataCell} ${getCellClass(xirrValue, salePrice)}`}
-                    title={`Exit Year ${exitYear}, Sale Price ${salePrice}%${isPurchasePrice(salePrice) ? ' (Purchase Price)' : ''}: ${xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}`}
+                    title={`Exit Year ${exitYear}, Sale Price ${salePrice}%${isPurchasePrice(salePrice) ? ' (Purchase Price)' : ''}\nXIRR: ${xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}\nTotal Amount: ${formatAmount(totalAmount)}`}
                   >
                     {isCalculating ? (
                       <span className={styles.loading}>...</span>
                     ) : (
-                      <span className={styles.xirrValue}>
-                        {xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}
-                      </span>
+                      <div className={styles.cellContent}>
+                        <div className={styles.xirrValue}>
+                          {xirrValue !== null ? formatXIRR(xirrValue) : 'N/A'}
+                        </div>
+                        <div className={styles.totalAmount}>
+                          {formatAmount(totalAmount)}
+                        </div>
+                      </div>
                     )}
                   </td>
                 );
@@ -234,7 +283,7 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
   return (
     <div className={styles.returnMatrix}>
       <div className={styles.matrixHeader}>
-        <h3 className={styles.title}>Return Matrix (XIRR %)</h3>
+        <h3 className={styles.title}>Return Matrix (XIRR % & Total Amount)</h3>
         {isMobile && (
           <div className={styles.viewToggle}>
             <button

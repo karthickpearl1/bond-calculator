@@ -209,7 +209,7 @@
   font-weight: var(--font-bold);
   font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
   position: relative;
-  min-width: 100px;
+  min-width: 120px;
   transition: all var(--transition-fast);
   cursor: pointer;
 }
@@ -221,16 +221,33 @@
   border-color: var(--color-primary);
 }
 
-.xirrValue {
-  font-size: var(--text-base);
-  display: block;
-  position: relative;
+.cellContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: center;
 }
 
-.xirrValue::after {
-  content: "%";
-  font-size: 0.8em;
-  margin-left: 1px;
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.xirrValue {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.totalAmount {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  opacity: 0.9;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 }
 
 .loading {
@@ -262,26 +279,54 @@
 /* Enhanced color coding for different return levels */
 .cellExcellent {
   background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-  color: #065f46;
   border-color: #10b981;
+}
+
+.cellExcellent .xirrValue {
+  color: #047857;
+}
+
+.cellExcellent .totalAmount {
+  color: #065f46;
 }
 
 .cellGood {
   background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-  color: #1e40af;
   border-color: #3b82f6;
+}
+
+.cellGood .xirrValue {
+  color: #1d4ed8;
+}
+
+.cellGood .totalAmount {
+  color: #1e40af;
 }
 
 .cellFair {
   background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
   border-color: #f59e0b;
+}
+
+.cellFair .xirrValue {
+  color: #d97706;
+}
+
+.cellFair .totalAmount {
+  color: #92400e;
 }
 
 .cellPoor {
   background: linear-gradient(135deg, #fee2e2, #fecaca);
-  color: #991b1b;
   border-color: #ef4444;
+}
+
+.cellPoor .xirrValue {
+  color: #dc2626;
+}
+
+.cellPoor .totalAmount {
+  color: #991b1b;
 }
 
 .cellError {
@@ -442,6 +487,10 @@
     font-size: var(--text-sm);
   }
   
+  .totalAmount {
+    font-size: 10px;
+  }
+  
   .legendItems {
     grid-template-columns: 1fr;
     gap: var(--spacing-sm);
@@ -589,7 +638,11 @@
   border-color: #10b981;
 }
 
-.cardItem.cellExcellent .cardValue {
+.cardItem.cellExcellent .xirrValue {
+  color: #047857;
+}
+
+.cardItem.cellExcellent .totalAmount {
   color: #065f46;
 }
 
@@ -598,7 +651,11 @@
   border-color: #3b82f6;
 }
 
-.cardItem.cellGood .cardValue {
+.cardItem.cellGood .xirrValue {
+  color: #1d4ed8;
+}
+
+.cardItem.cellGood .totalAmount {
   color: #1e40af;
 }
 
@@ -607,7 +664,11 @@
   border-color: #f59e0b;
 }
 
-.cardItem.cellFair .cardValue {
+.cardItem.cellFair .xirrValue {
+  color: #d97706;
+}
+
+.cardItem.cellFair .totalAmount {
   color: #92400e;
 }
 
@@ -616,7 +677,11 @@
   border-color: #ef4444;
 }
 
-.cardItem.cellPoor .cardValue {
+.cardItem.cellPoor .xirrValue {
+  color: #dc2626;
+}
+
+.cardItem.cellPoor .totalAmount {
   color: #991b1b;
 }
 

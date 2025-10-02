@@ -44,8 +44,15 @@
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .name {
@@ -80,7 +87,8 @@
 }
 
 .dedication {
-  margin-bottom: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
   padding: var(--spacing-lg);
   background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
@@ -89,7 +97,7 @@
 }
 
 .dedicationText {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-style: italic;
   text-align: center;
   line-height: 1.6;
@@ -116,7 +124,7 @@
 
 .dedicationLink::after {
   content: "🙏";
-  margin-left: var(--spacing-xs);
+  margin-left: 2px;
   font-size: var(--text-xs);
   opacity: 0.8;
 }
@@ -205,43 +213,43 @@
   .footer {
     padding: var(--spacing-xl) var(--spacing-md);
   }
-  
+
   .mainText {
     font-size: var(--text-base);
   }
-  
+
   .tagline {
     font-size: var(--text-sm);
   }
-  
+
   .tech {
     justify-content: center;
     gap: var(--spacing-xs);
   }
-  
+
   .techItem {
     font-size: var(--text-xs);
     padding: var(--spacing-xs);
   }
-  
+
   .separator {
     display: none;
   }
-  
+
   .dedication {
     padding: var(--spacing-md);
   }
-  
+
   .dedicationText {
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
   }
-  
+
   .links {
     flex-direction: row;
     gap: var(--spacing-md);
     justify-content: center;
   }
-  
+
   .link {
     justify-content: center;
     flex: 1;
@@ -253,26 +261,26 @@
   .footer {
     padding: var(--spacing-lg) var(--spacing-sm);
   }
-  
+
   .mainText {
     font-size: var(--text-sm);
   }
-  
+
   .tagline {
     font-size: var(--text-xs);
   }
-  
+
   .container {
     padding: 0 var(--spacing-sm);
   }
-  
+
   .dedication {
     padding: var(--spacing-sm);
     margin-bottom: var(--spacing-md);
   }
-  
+
   .dedicationText {
-    font-size: 10px;
+    font-size: var(--text-xs);
     line-height: 1.4;
   }
 }
@@ -282,11 +290,11 @@
   .heart {
     animation: none;
   }
-  
+
   .link {
     transition: none;
   }
-  
+
   .techItem {
     transition: none;
   }
@@ -298,16 +306,16 @@
     background: #000;
     color: #fff;
   }
-  
+
   .footer::before {
     display: none;
   }
-  
+
   .link {
     border-color: #fff;
     background: transparent;
   }
-  
+
   .techItem {
     border-color: #fff;
     background: transparent;
@@ -322,25 +330,25 @@
     border-top: 2px solid black;
     page-break-inside: avoid;
   }
-  
+
   .footer::before {
     display: none;
   }
-  
+
   .links {
     display: none;
   }
-  
+
   .tech {
     display: none;
   }
-  
+
   .dedication {
     background: none;
     border: 1px solid black;
     color: black;
   }
-  
+
   .dedicationLink {
     color: black;
     background: none;

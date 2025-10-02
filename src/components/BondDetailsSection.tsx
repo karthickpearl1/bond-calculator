@@ -24,15 +24,19 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
    * Handle input change with validation
    */
   const handleInputChange = (field: keyof BondInputs, value: string | Date) => {
-    let processedValue: string | number | Date = value;
-    
-    // Convert string to number for numeric fields
-    if (typeof value === 'string' && 
-        ['faceValue', 'couponRate', 'purchasePrice', 'accruedInterest', 'brokerage', 'tdsRate'].includes(field)) {
-      processedValue = value === '' ? '' : parseFloat(value);
+    try {
+      let processedValue: string | number | Date = value;
+      
+      // Convert string to number for numeric fields
+      if (typeof value === 'string' && 
+          ['faceValue', 'couponRate', 'purchasePrice', 'accruedInterest', 'brokerage', 'tdsRate'].includes(field)) {
+        processedValue = value === '' ? '' : parseFloat(value);
+      }
+      
+      onInputChange(field, processedValue);
+    } catch (error) {
+      console.error('Error processing input change:', error);
     }
-    
-    onInputChange(field, processedValue);
   };
 
   /**
@@ -46,8 +50,14 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
    * Handle date input change
    */
   const handleDateChange = (field: keyof BondInputs, value: string) => {
-    const date = new Date(value);
-    onInputChange(field, date);
+    try {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        onInputChange(field, date);
+      }
+    } catch (error) {
+      console.error('Invalid date input:', error);
+    }
   };
 
   return (
@@ -55,7 +65,7 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
       <h3>Bond Details</h3>
       
       <div className={styles.formGrid}>
-        {/* Face Value */}
+        {/* Face Value - Full width on mobile */}
         <div className={styles.formGroup}>
           <label htmlFor="faceValue">
             Face Value <span className={styles.required}>*</span>
@@ -76,125 +86,128 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
           )}
         </div>
 
-        {/* Coupon Rate */}
-        <div className={styles.formGroup}>
-          <label htmlFor="couponRate">
-            Coupon Rate (%) <span className={styles.required}>*</span>
-          </label>
-          <input
-            id="couponRate"
-            type="number"
-            value={inputs.couponRate || ''}
-            onChange={(e) => handleInputChange('couponRate', e.target.value)}
-            placeholder="11.9"
-            min="0"
-            max="50"
-            step="0.1"
-            className={errors.couponRate ? styles.error : ''}
-          />
-          {errors.couponRate && (
-            <span className={styles.errorMessage}>{errors.couponRate}</span>
-          )}
+        {/* Price Row - Two columns on mobile */}
+        <div className={styles.mobileRow}>
+          <div className={styles.formGroup}>
+            <label htmlFor="couponRate">
+              Coupon Rate (%) <span className={styles.required}>*</span>
+            </label>
+            <input
+              id="couponRate"
+              type="number"
+              value={inputs.couponRate || ''}
+              onChange={(e) => handleInputChange('couponRate', e.target.value)}
+              placeholder="11.9"
+              min="0"
+              max="50"
+              step="0.1"
+              className={errors.couponRate ? styles.error : ''}
+            />
+            {errors.couponRate && (
+              <span className={styles.errorMessage}>{errors.couponRate}</span>
+            )}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="purchasePrice">
+              Purchase Price (%) <span className={styles.required}>*</span>
+            </label>
+            <input
+              id="purchasePrice"
+              type="number"
+              value={inputs.purchasePrice || ''}
+              onChange={(e) => handleInputChange('purchasePrice', e.target.value)}
+              placeholder="102.5"
+              min="50"
+              max="200"
+              step="0.1"
+              className={errors.purchasePrice ? styles.error : ''}
+            />
+            {errors.purchasePrice && (
+              <span className={styles.errorMessage}>{errors.purchasePrice}</span>
+            )}
+          </div>
         </div>
 
-        {/* Purchase Price */}
-        <div className={styles.formGroup}>
-          <label htmlFor="purchasePrice">
-            Purchase Price (% of Face) <span className={styles.required}>*</span>
-          </label>
-          <input
-            id="purchasePrice"
-            type="number"
-            value={inputs.purchasePrice || ''}
-            onChange={(e) => handleInputChange('purchasePrice', e.target.value)}
-            placeholder="102.5"
-            min="50"
-            max="200"
-            step="0.1"
-            className={errors.purchasePrice ? styles.error : ''}
-          />
-          {errors.purchasePrice && (
-            <span className={styles.errorMessage}>{errors.purchasePrice}</span>
-          )}
+        {/* Interest & Brokerage Row - Two columns on mobile */}
+        <div className={styles.mobileRow}>
+          <div className={styles.formGroup}>
+            <label htmlFor="accruedInterest">
+              Accrued Interest <span className={styles.required}>*</span>
+            </label>
+            <input
+              id="accruedInterest"
+              type="number"
+              value={inputs.accruedInterest || ''}
+              onChange={(e) => handleInputChange('accruedInterest', e.target.value)}
+              placeholder="358.63"
+              min="0"
+              max="100000"
+              step="0.01"
+              className={errors.accruedInterest ? styles.error : ''}
+            />
+            {errors.accruedInterest && (
+              <span className={styles.errorMessage}>{errors.accruedInterest}</span>
+            )}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="brokerage">
+              Brokerage <span className={styles.required}>*</span>
+            </label>
+            <input
+              id="brokerage"
+              type="number"
+              value={inputs.brokerage || ''}
+              onChange={(e) => handleInputChange('brokerage', e.target.value)}
+              placeholder="0"
+              min="0"
+              max="50000"
+              step="0.01"
+              className={errors.brokerage ? styles.error : ''}
+            />
+            {errors.brokerage && (
+              <span className={styles.errorMessage}>{errors.brokerage}</span>
+            )}
+          </div>
         </div>
 
-        {/* Accrued Interest */}
-        <div className={styles.formGroup}>
-          <label htmlFor="accruedInterest">
-            Accrued Interest <span className={styles.required}>*</span>
-          </label>
-          <input
-            id="accruedInterest"
-            type="number"
-            value={inputs.accruedInterest || ''}
-            onChange={(e) => handleInputChange('accruedInterest', e.target.value)}
-            placeholder="358.63"
-            min="0"
-            max="100000"
-            step="0.01"
-            className={errors.accruedInterest ? styles.error : ''}
-          />
-          {errors.accruedInterest && (
-            <span className={styles.errorMessage}>{errors.accruedInterest}</span>
-          )}
+        {/* Date Row - Two columns on mobile */}
+        <div className={styles.dateRow}>
+          <div className={styles.formGroup}>
+            <label htmlFor="purchaseDate">
+              Purchase Date <span className={styles.required}>*</span>
+            </label>
+            <input
+              id="purchaseDate"
+              type="date"
+              value={formatDateForInput(inputs.purchaseDate)}
+              onChange={(e) => handleDateChange('purchaseDate', e.target.value)}
+              className={errors.purchaseDate ? styles.error : ''}
+            />
+            {errors.purchaseDate && (
+              <span className={styles.errorMessage}>{errors.purchaseDate}</span>
+            )}
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="maturityDate">
+              Maturity Date <span className={styles.required}>*</span>
+            </label>
+            <input
+              id="maturityDate"
+              type="date"
+              value={formatDateForInput(inputs.maturityDate)}
+              onChange={(e) => handleDateChange('maturityDate', e.target.value)}
+              className={errors.maturityDate ? styles.error : ''}
+            />
+            {errors.maturityDate && (
+              <span className={styles.errorMessage}>{errors.maturityDate}</span>
+            )}
+          </div>
         </div>
 
-        {/* Brokerage */}
-        <div className={styles.formGroup}>
-          <label htmlFor="brokerage">
-            Brokerage <span className={styles.required}>*</span>
-          </label>
-          <input
-            id="brokerage"
-            type="number"
-            value={inputs.brokerage || ''}
-            onChange={(e) => handleInputChange('brokerage', e.target.value)}
-            placeholder="0"
-            min="0"
-            max="50000"
-            step="0.01"
-            className={errors.brokerage ? styles.error : ''}
-          />
-          {errors.brokerage && (
-            <span className={styles.errorMessage}>{errors.brokerage}</span>
-          )}
-        </div>
-
-        {/* Purchase Date */}
-        <div className={styles.formGroup}>
-          <label htmlFor="purchaseDate">
-            Purchase Date <span className={styles.required}>*</span>
-          </label>
-          <input
-            id="purchaseDate"
-            type="date"
-            value={formatDateForInput(inputs.purchaseDate)}
-            onChange={(e) => handleDateChange('purchaseDate', e.target.value)}
-            className={errors.purchaseDate ? styles.error : ''}
-          />
-          {errors.purchaseDate && (
-            <span className={styles.errorMessage}>{errors.purchaseDate}</span>
-          )}
-        </div>
-
-        {/* Maturity Date */}
-        <div className={styles.formGroup}>
-          <label htmlFor="maturityDate">
-            Maturity Date <span className={styles.required}>*</span>
-          </label>
-          <input
-            id="maturityDate"
-            type="date"
-            value={formatDateForInput(inputs.maturityDate)}
-            onChange={(e) => handleDateChange('maturityDate', e.target.value)}
-            className={errors.maturityDate ? styles.error : ''}
-          />
-          {errors.maturityDate && (
-            <span className={styles.errorMessage}>{errors.maturityDate}</span>
-          )}
-        </div>
-
-        {/* TDS Rate */}
+        {/* TDS Rate - Full width */}
         <div className={styles.formGroup}>
           <label htmlFor="tdsRate">
             TDS Rate (%) <span className={styles.required}>*</span>

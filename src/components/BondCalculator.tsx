@@ -444,6 +444,7 @@ export const BondCalculator: React.FC = () => {
               salePrices={selectedSalePrices}
               exitYears={selectedExitYears}
               purchasePrice={inputs.purchasePrice}
+              bondInputs={inputs}
               isCalculating={isCalculating}
               calculationErrors={errors.calculationErrors}
             />
