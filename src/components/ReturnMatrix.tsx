@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { XIRRMatrix, BondInputs } from '../types';
+import { useCurrency } from '../contexts/CurrencyContext';
 import styles from './ReturnMatrix.module.css';
 
 interface ReturnMatrixProps {
@@ -74,18 +75,15 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
     return saleProceeds + totalCoupons;
   };
 
+  const { formatCurrency } = useCurrency();
+
   /**
-   * Format currency amount in Indian number format
+   * Format currency amount using selected currency
    * @param amount - Amount to format
-   * @returns Formatted currency string (e.g., ₹1,23,544)
+   * @returns Formatted currency string
    */
   const formatAmount = (amount: number): string => {
-    const roundedAmount = Math.round(amount);
-    
-    // Convert to Indian number format with commas
-    const formatted = roundedAmount.toLocaleString('en-IN');
-    
-    return `₹${formatted}`;
+    return formatCurrency(amount);
   };
 
   /**

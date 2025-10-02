@@ -19,6 +19,7 @@ import { ExitYearSelector } from './ExitYearSelector';
 import { CalculationSummary } from './CalculationSummary';
 import { ReturnMatrix } from './ReturnMatrix';
 import { ThemeToggle } from './ThemeToggle';
+import { CurrencySelector } from './CurrencySelector';
 import { Footer } from './Footer';
 import styles from './BondCalculator.module.css';
 
@@ -96,21 +97,16 @@ export const BondCalculator: React.FC = () => {
   useEffect(() => {
     const newDefaultPrices = generateDefaultSalePrices(inputs.purchasePrice);
     
-    // Check if current prices look like auto-generated defaults
-    // (contains face value 100% and purchase price, and has reasonable increments)
-    const hasDefaults = availableSalePrices.includes(100) && 
-                       availableSalePrices.includes(inputs.purchasePrice);
-    const isLikelyDefaults = hasDefaults && availableSalePrices.length <= 10; // Reasonable default count
-    
-    if (isLikelyDefaults || availableSalePrices.length === 0) {
+    // Only update if this is the initial load or if the available prices are empty
+    if (availableSalePrices.length === 0) {
       setAvailableSalePrices(newDefaultPrices);
-      // Update selected prices to include some key defaults
+      // Set initial selected prices
       const keyPrices = [100, inputs.purchasePrice]; // Always include face value and purchase price
       const additionalPrices = newDefaultPrices.filter(p => !keyPrices.includes(p)).slice(0, 2);
       const defaultSelection = [...keyPrices, ...additionalPrices].filter(p => newDefaultPrices.includes(p));
       setSelectedSalePrices(defaultSelection);
     }
-  }, [inputs.purchasePrice, generateDefaultSalePrices, availableSalePrices]);
+  }, [inputs.purchasePrice, generateDefaultSalePrices]);
 
   /**
    * Effect to trigger recalculation when any parameter changes
@@ -353,6 +349,7 @@ export const BondCalculator: React.FC = () => {
             </p>
           </div>
           <div className={styles.headerActions}>
+            <CurrencySelector />
             <ThemeToggle />
           </div>
         </div>
