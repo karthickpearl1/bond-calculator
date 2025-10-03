@@ -23,11 +23,12 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
 }) => {
   /**
    * Calculate available exit years based on purchase and maturity dates
+   * Year 1 represents the purchase year itself (partial year)
    */
   const availableExitYears = useMemo(() => {
     const purchaseYear = purchaseDate.getFullYear();
     const maturityYear = maturityDate.getFullYear();
-    const maxYears = maturityYear - purchaseYear;
+    const maxYears = maturityYear - purchaseYear + 1; // +1 because year 1 is the purchase year
     
     // Generate years from 1 to maxYears, but at least 1 year
     const years: number[] = [];
@@ -40,9 +41,10 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
 
   /**
    * Calculate the actual calendar year for an exit year
+   * For partial year scenarios, Year 1 represents the purchase year itself
    */
   const getExitCalendarYear = (exitYear: number): number => {
-    return purchaseDate.getFullYear() + exitYear;
+    return purchaseDate.getFullYear() + exitYear - 1;
   };
 
   /**
@@ -95,7 +97,7 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
       </div>
       
       <p className={styles.description}>
-        Select the exit years you want to analyze (years after purchase):
+        Select the exit years you want to analyze (Year 1 = exit in purchase year):
       </p>
 
       <div className={styles.yearGrid}>

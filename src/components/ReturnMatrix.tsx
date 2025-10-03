@@ -56,7 +56,7 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
 
   /**
    * Calculate total amount earned for a scenario
-   * @param exitYear - Exit year
+   * @param exitYear - Exit year (1-based, where 1 = exit in purchase year)
    * @param salePrice - Sale price percentage
    * @returns Total amount earned (sale proceeds + net coupons)
    */
@@ -68,8 +68,12 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
     const monthlyCoupon = (bondInputs.faceValue * (bondInputs.couponRate / 100)) / 12;
     const netMonthlyCoupon = monthlyCoupon * (1 - (bondInputs.tdsRate / 100));
     
-    // Total coupons over the period
-    const totalMonths = exitYear * 12;
+    // Calculate total months from purchase to exit
+    const purchaseDate = bondInputs.purchaseDate;
+    const monthsInFirstYear = 12 - purchaseDate.getMonth(); // Remaining months in purchase year (including purchase month)
+    const additionalYears = exitYear - 1;
+    const totalMonths = monthsInFirstYear + (additionalYears * 12);
+    
     const totalCoupons = netMonthlyCoupon * totalMonths;
     
     return saleProceeds + totalCoupons;
@@ -87,13 +91,14 @@ export const ReturnMatrix: React.FC<ReturnMatrixProps> = ({
   };
 
   /**
-   * Get the display year for an exit year (purchase year + exit year)
-   * @param exitYear - Number of years after purchase
-   * @returns Display year (e.g., 2026 for exit year 1 if purchased in 2025)
+   * Get the display year for an exit year
+   * For partial year scenarios, Year 1 represents the purchase year itself
+   * @param exitYear - Number of years after purchase (1-based)
+   * @returns Display year (e.g., 2025 for exit year 1 if purchased in 2025)
    */
   const getDisplayYear = (exitYear: number): string => {
-    const currentYear = new Date().getFullYear();
-    return (currentYear + exitYear).toString();
+    const purchaseYear = bondInputs.purchaseDate.getFullYear();
+    return (purchaseYear + exitYear - 1).toString();
   };
 
   /**

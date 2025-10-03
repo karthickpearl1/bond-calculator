@@ -109,7 +109,7 @@ export class XIRRCalculator {
    * Generate cash flows for a bond investment scenario
    * 
    * @param inputs - Bond input parameters
-   * @param exitYear - Number of years after purchase to exit (dynamic based on maturity)
+   * @param exitYear - Number of years after purchase to exit (1-based, where 1 = exit in purchase year)
    * @param salePrice - Sale price as percentage of face value
    * @returns Array of cash flows including initial investment, monthly coupons, and sale proceeds
    */
@@ -125,7 +125,7 @@ export class XIRRCalculator {
     // Calculate maximum possible exit year based on maturity date
     const purchaseYear = inputs.purchaseDate.getFullYear();
     const maturityYear = inputs.maturityDate.getFullYear();
-    const maxExitYear = maturityYear - purchaseYear;
+    const maxExitYear = maturityYear - purchaseYear + 1; // +1 because year 1 is the purchase year
     
     if (exitYear > maxExitYear) {
       throw new Error(`Exit year cannot exceed ${maxExitYear} (maturity year ${maturityYear})`);
@@ -153,10 +153,15 @@ export class XIRRCalculator {
     const monthlyCoupon = (inputs.faceValue * (inputs.couponRate / 100)) / 12;
     const netMonthlyCoupon = monthlyCoupon * (1 - (inputs.tdsRate / 100));
 
-    // Generate monthly coupon payments
-    const totalMonths = exitYear * 12;
+    // Calculate cash flows based on exit year
     const purchaseDate = new Date(inputs.purchaseDate);
     
+    // Calculate total months from purchase to exit
+    const monthsInFirstYear = 12 - purchaseDate.getMonth(); // Remaining months in purchase year (including purchase month)
+    const additionalYears = exitYear - 1;
+    const totalMonths = monthsInFirstYear + (additionalYears * 12);
+    
+    // Generate monthly coupon payments
     for (let month = 1; month <= totalMonths; month++) {
       const couponDate = new Date(purchaseDate);
       couponDate.setMonth(couponDate.getMonth() + month);

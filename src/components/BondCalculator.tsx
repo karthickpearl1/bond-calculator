@@ -92,6 +92,23 @@ export const BondCalculator: React.FC = () => {
   }, []);
 
   /**
+   * Generate default exit years based on maturity date
+   */
+  const generateDefaultExitYears = useCallback((purchaseDate: Date, maturityDate: Date): number[] => {
+    const purchaseYear = purchaseDate.getFullYear();
+    const maturityYear = maturityDate.getFullYear();
+    const maxYears = maturityYear - purchaseYear + 1; // +1 because year 1 is the purchase year
+    
+    // Generate all available years from 1 to maxYears
+    const years: number[] = [];
+    for (let i = 1; i <= Math.max(1, maxYears); i++) {
+      years.push(i);
+    }
+    
+    return years;
+  }, []);
+
+  /**
    * Effect to update available sale prices when purchase price changes
    */
   useEffect(() => {
@@ -107,6 +124,16 @@ export const BondCalculator: React.FC = () => {
       setSelectedSalePrices(defaultSelection);
     }
   }, [inputs.purchasePrice, generateDefaultSalePrices]);
+
+  /**
+   * Effect to update default exit years when purchase or maturity date changes
+   */
+  useEffect(() => {
+    const newDefaultExitYears = generateDefaultExitYears(inputs.purchaseDate, inputs.maturityDate);
+    
+    // Update selected exit years to include all available years by default
+    setSelectedExitYears(newDefaultExitYears);
+  }, [inputs.purchaseDate, inputs.maturityDate, generateDefaultExitYears]);
 
   /**
    * Effect to trigger recalculation when any parameter changes
