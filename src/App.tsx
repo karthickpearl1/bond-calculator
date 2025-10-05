@@ -37,6 +37,23 @@ const App: FC = () => {
         // Initialize analytics service
         analyticsService.initialize(config.measurementId);
         
+        // Always expose analytics debugging functions to window for troubleshooting
+        if (typeof window !== 'undefined') {
+          (window as any).getAnalyticsStatus = () => {
+            return {
+              service: analyticsService,
+              config: getAnalyticsConfig(),
+              privacyStatus: analyticsService.getPrivacyStatus(),
+              isEnabled: isAnalyticsEnabled()
+            };
+          };
+          
+          // Expose service only in debug mode
+          if (config.debugMode) {
+            (window as any).analyticsService = analyticsService;
+          }
+        }
+        
         // Track initial page view
         analyticsService.trackPageView(window.location.pathname);
         
