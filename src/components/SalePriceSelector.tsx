@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
+import { analyticsService } from '../services/analyticsService';
 import styles from './SalePriceSelector.module.css';
 
 /**
@@ -25,6 +26,29 @@ export const SalePriceSelector: React.FC<SalePriceSelectorProps> = ({
 }) => {
   const [newPriceInput, setNewPriceInput] = useState<string>('');
   const [showAddInput, setShowAddInput] = useState<boolean>(false);
+  
+  // Ref for debouncing analytics events
+  const debounceTimeoutRef = useRef<number | null>(null);
+
+  /**
+   * Track sale price selection changes with debouncing
+   */
+  const trackSelectionChange = useCallback((newSelection: number[]) => {
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set new debounced timeout
+    debounceTimeoutRef.current = window.setTimeout(() => {
+      analyticsService.trackUserInteraction('sale_price_selection', {
+        component: 'SalePriceSelector',
+        action: 'selection_change',
+        value: newSelection.length,
+        selected_prices: newSelection.join(',')
+      });
+    }, 500); // 500ms debounce delay
+  }, []);
 
   /**
    * Generate default prices from face value (100%) to purchase price
@@ -66,10 +90,12 @@ export const SalePriceSelector: React.FC<SalePriceSelectorProps> = ({
     if (isSelected) {
       // Remove price from selection
       const newSelection = selectedPrices.filter(p => p !== price);
+      trackSelectionChange(newSelection);
       onSelectionChange(newSelection);
     } else {
       // Add price to selection
       const newSelection = [...selectedPrices, price].sort((a, b) => a - b);
+      trackSelectionChange(newSelection);
       onSelectionChange(newSelection);
     }
   };
@@ -130,10 +156,14 @@ export const SalePriceSelector: React.FC<SalePriceSelectorProps> = ({
   const handleSelectAll = () => {
     if (selectedPrices.length === availablePrices.length) {
       // Deselect all
-      onSelectionChange([]);
+      const newSelection: number[] = [];
+      trackSelectionChange(newSelection);
+      onSelectionChange(newSelection);
     } else {
       // Select all available prices
-      onSelectionChange([...availablePrices]);
+      const newSelection = [...availablePrices];
+      trackSelectionChange(newSelection);
+      onSelectionChange(newSelection);
     }
   };
 

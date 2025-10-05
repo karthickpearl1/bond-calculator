@@ -21,6 +21,8 @@ import { ReturnMatrix } from './ReturnMatrix';
 import { ThemeToggle } from './ThemeToggle';
 import { CurrencySelector } from './CurrencySelector';
 import { Footer } from './Footer';
+import { useCurrency } from '../contexts/CurrencyContext';
+import { analyticsService } from '../services/analyticsService';
 import styles from './BondCalculator.module.css';
 
 /**
@@ -40,6 +42,9 @@ export const BondCalculator: React.FC = () => {
     calculationErrors: [],
     systemErrors: []
   });
+
+  // Currency context for tracking
+  const { currency } = useCurrency();
 
   // Refs for debouncing
   const debounceTimeoutRef = useRef<number | null>(null);
@@ -279,6 +284,14 @@ export const BondCalculator: React.FC = () => {
     const systemErrors: string[] = [];
 
     try {
+      // Track bond calculation event with session context
+      analyticsService.trackCalculationWithSession('bond_xirr_matrix', {
+        exitYearsCount: selectedExitYears.length,
+        salePricesCount: selectedSalePrices.length,
+        currency: currency,
+        bondType: 'government_bond' // Could be made dynamic based on inputs if needed
+      });
+
       for (const exitYear of selectedExitYears) {
         matrix[exitYear] = {};
         
@@ -341,7 +354,7 @@ export const BondCalculator: React.FC = () => {
     }
 
     return matrix;
-  }, [inputs, selectedSalePrices, selectedExitYears]);
+  }, [inputs, selectedSalePrices, selectedExitYears, currency]);
 
   /**
    * Combined calculation results

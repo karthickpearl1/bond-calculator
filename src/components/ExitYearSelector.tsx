@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useCallback } from 'react';
+import { analyticsService } from '../services/analyticsService';
 import styles from './ExitYearSelector.module.css';
 
 /**
@@ -21,6 +22,28 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
   purchaseDate,
   maturityDate
 }) => {
+  // Ref for debouncing analytics events
+  const debounceTimeoutRef = useRef<number | null>(null);
+
+  /**
+   * Track exit year selection changes with debouncing
+   */
+  const trackSelectionChange = useCallback((newSelection: number[]) => {
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set new debounced timeout
+    debounceTimeoutRef.current = window.setTimeout(() => {
+      analyticsService.trackUserInteraction('exit_year_selection', {
+        component: 'ExitYearSelector',
+        action: 'selection_change',
+        value: newSelection.length,
+        selected_years: newSelection.join(',')
+      });
+    }, 500); // 500ms debounce delay
+  }, []);
   /**
    * Calculate available exit years based on purchase and maturity dates
    * Year 1 represents the purchase year itself (partial year)
@@ -56,10 +79,12 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
     if (isSelected) {
       // Remove year from selection
       const newSelection = selectedYears.filter(y => y !== year);
+      trackSelectionChange(newSelection);
       onSelectionChange(newSelection);
     } else {
       // Add year to selection
       const newSelection = [...selectedYears, year].sort((a, b) => a - b);
+      trackSelectionChange(newSelection);
       onSelectionChange(newSelection);
     }
   };
@@ -70,10 +95,14 @@ export const ExitYearSelector: React.FC<ExitYearSelectorProps> = ({
   const handleSelectAll = () => {
     if (selectedYears.length === availableExitYears.length) {
       // Deselect all
-      onSelectionChange([]);
+      const newSelection: number[] = [];
+      trackSelectionChange(newSelection);
+      onSelectionChange(newSelection);
     } else {
       // Select all available years
-      onSelectionChange([...availableExitYears]);
+      const newSelection = [...availableExitYears];
+      trackSelectionChange(newSelection);
+      onSelectionChange(newSelection);
     }
   };
 

@@ -1,15 +1,42 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="description" content="Bond Return Calculator - Analyze bond investment returns through XIRR calculations across different exit scenarios and sale prices" />
-    <title>Bond Return Calculator</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="description"
+    content="Bond Return Calculator - Analyze bond investment returns through XIRR calculations across different exit scenarios and sale prices" />
+  <title>Bond Return Calculator</title>
+
+  <!-- Google Analytics 4 -->
+  <script>
+    // Initialize gtag function before script loads
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    // Error handling for script loading
+    window.gtagLoadError = false;
+    window.gtagLoaded = false;
+
+    // Store the original gtag function
+    const originalGtag = gtag;
+
+    // Make gtag available globally with error handling
+    window.gtag = function () {
+      if (window.gtagLoadError) {
+        return; // Silently fail if GA script failed to load
+      }
+      originalGtag.apply(this, arguments);
+    };
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

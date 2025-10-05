@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
+import { analyticsService } from '../services/analyticsService';
+import { ANALYTICS_EVENTS } from '../types/analytics';
 
 export type Currency = 'INR' | 'USD' | 'EUR' | 'GBP' | 'JPY' | 'AUD';
 
@@ -40,9 +42,24 @@ interface CurrencyProviderProps {
 }
 
 export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) => {
-  const [currency, setCurrency] = useState<Currency>('INR');
+  const [currency, setCurrencyState] = useState<Currency>('INR');
   
   const currencyInfo = CURRENCIES[currency];
+  
+  const setCurrency = (newCurrency: Currency) => {
+    const previousCurrency = currency;
+    setCurrencyState(newCurrency);
+    
+    // Track currency change event
+    analyticsService.trackEvent(ANALYTICS_EVENTS.CURRENCY_CHANGE, {
+      previous_currency: previousCurrency,
+      new_currency: newCurrency,
+      interaction_type: 'currency_preference_change'
+    });
+    
+    // Update session currency tracking
+    analyticsService.updateSessionCurrency(newCurrency);
+  };
   
   const formatCurrency = (amount: number): string => {
     if (isNaN(amount) || !isFinite(amount)) {

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import type { BondInputs } from '../types';
+import { analyticsService } from '../services/analyticsService';
 import styles from './BondDetailsSection.module.css';
 
 /**
@@ -20,8 +21,34 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
   onInputChange,
   errors = {}
 }) => {
+  // Ref for debouncing analytics events
+  const debounceTimeoutRef = useRef<Record<string, number>>({});
+
   /**
-   * Handle input change with validation
+   * Track input changes with debouncing to avoid excessive events
+   */
+  const trackInputChange = useCallback((field: keyof BondInputs, value: string | number | Date) => {
+    // Clear existing timeout for this field
+    if (debounceTimeoutRef.current[field]) {
+      clearTimeout(debounceTimeoutRef.current[field]);
+    }
+
+    // Set new debounced timeout
+    debounceTimeoutRef.current[field] = window.setTimeout(() => {
+      // Only track if value is not empty
+      if (value !== '' && value !== null && value !== undefined) {
+        analyticsService.trackUserInteraction('bond_parameter_change', {
+          component: 'BondDetailsSection',
+          action: 'input_change',
+          input_field: field,
+          value: typeof value === 'object' ? 'date' : String(value)
+        });
+      }
+    }, 1000); // 1 second debounce delay
+  }, []);
+
+  /**
+   * Handle input change with validation and tracking
    */
   const handleInputChange = (field: keyof BondInputs, value: string | Date) => {
     try {
@@ -32,6 +59,9 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
           ['faceValue', 'couponRate', 'purchasePrice', 'accruedInterest', 'brokerage', 'tdsRate'].includes(field)) {
         processedValue = value === '' ? '' : parseFloat(value);
       }
+      
+      // Track the input change with debouncing
+      trackInputChange(field, processedValue);
       
       onInputChange(field, processedValue);
     } catch (error) {
@@ -47,12 +77,15 @@ export const BondDetailsSection: React.FC<BondDetailsSectionProps> = ({
   };
 
   /**
-   * Handle date input change
+   * Handle date input change with tracking
    */
   const handleDateChange = (field: keyof BondInputs, value: string) => {
     try {
       const date = new Date(value);
       if (!isNaN(date.getTime())) {
+        // Track the date change with debouncing
+        trackInputChange(field, date);
+        
         onInputChange(field, date);
       }
     } catch (error) {
