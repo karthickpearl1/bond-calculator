@@ -3,22 +3,18 @@
   command = "npm run build"
 
 [build.environment]
-  NODE_VERSION = "22.20"
+  VITE_GA_MEASUREMENT_ID = "G-NWR9FRXLP3"
+  VITE_GA_ENABLED = "true"
+  VITE_GA_DEBUG = "true"
+  VITE_GA_RESPECT_DNT = "true"
+  VITE_GA_FORCE_OPT_OUT = "false"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Optional: Set different values for different deploy contexts
+[context.production.environment]
+  VITE_GA_DEBUG = "false"
 
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+[context.deploy-preview.environment]
+  VITE_GA_DEBUG = "true"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+[context.branch-deploy.environment]
+  VITE_GA_DEBUG = "true"
